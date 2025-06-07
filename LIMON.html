@@ -256,6 +256,62 @@
             filter: hue-rotate(90deg) contrast(1.2);
         }
 
+        .floating-images {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .floating-img {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            opacity: 0.7;
+            filter: hue-rotate(90deg) contrast(1.2) brightness(0.8);
+            animation: floatAcross linear infinite;
+        }
+
+        @keyframes floatAcross {
+            0% {
+                transform: translateX(-200px) translateY(0px) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateX(calc(100vw + 200px)) translateY(-50px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .floating-img:nth-child(odd) {
+            animation-direction: reverse;
+        }
+
+        .floating-img:nth-child(2n) {
+            animation-delay: -2s;
+        }
+
+        .floating-img:nth-child(3n) {
+            animation-delay: -4s;
+        }
+
+        .floating-img:nth-child(4n) {
+            animation-delay: -6s;
+        }
+
         .audio-player {
             position: fixed;
             bottom: 20px;
@@ -341,6 +397,7 @@
 </head>
 <body>
     <div class="glitch-bg"></div>
+    <div class="floating-images" id="floatingImages"></div>
     <div class="error-messages" id="errorMessages"></div>
     
     <div class="container">
@@ -573,6 +630,80 @@
 
             adminGallery.innerHTML = photosHTML;
             publicGallery.innerHTML = photoList.map(photo => `<img src="${photo.url}" alt="${photo.name}">`).join('');
+            
+            // Atualizar imagens flutuantes
+            updateFloatingImages();
+        }
+
+        // Criar imagens flutuantes que passam pela tela
+        function updateFloatingImages() {
+            const floatingContainer = document.getElementById('floatingImages');
+            floatingContainer.innerHTML = ''; // Limpar imagens existentes
+            
+            if (photoList.length === 0) return;
+            
+            // Criar múltiplas instâncias das imagens para efeito contínuo
+            photoList.forEach((photo, index) => {
+                // Criar 3 cópias de cada imagem com tempos diferentes
+                for (let i = 0; i < 3; i++) {
+                    const img = document.createElement('img');
+                    img.src = photo.url;
+                    img.className = 'floating-img';
+                    img.alt = photo.name;
+                    
+                    // Posição vertical aleatória
+                    const randomY = Math.random() * (window.innerHeight - 150);
+                    img.style.top = randomY + 'px';
+                    
+                    // Duração aleatória entre 15-25 segundos
+                    const duration = 15 + Math.random() * 10;
+                    img.style.animationDuration = duration + 's';
+                    
+                    // Delay aleatório
+                    const delay = Math.random() * 10 + (i * 5);
+                    img.style.animationDelay = '-' + delay + 's';
+                    
+                    // Algumas imagens vão da direita para esquerda
+                    if (Math.random() > 0.5) {
+                        img.style.animationDirection = 'reverse';
+                    }
+                    
+                    floatingContainer.appendChild(img);
+                }
+            });
+        }
+
+        // Função para criar novas imagens flutuantes periodicamente
+        function createFloatingImage() {
+            if (photoList.length === 0) return;
+            
+            const randomPhoto = photoList[Math.floor(Math.random() * photoList.length)];
+            const img = document.createElement('img');
+            img.src = randomPhoto.url;
+            img.className = 'floating-img';
+            img.alt = randomPhoto.name;
+            
+            // Posição vertical aleatória
+            const randomY = Math.random() * (window.innerHeight - 150);
+            img.style.top = randomY + 'px';
+            
+            // Duração aleatória
+            const duration = 15 + Math.random() * 10;
+            img.style.animationDuration = duration + 's';
+            
+            // Direção aleatória
+            if (Math.random() > 0.5) {
+                img.style.animationDirection = 'reverse';
+            }
+            
+            document.getElementById('floatingImages').appendChild(img);
+            
+            // Remover a imagem após a animação
+            setTimeout(() => {
+                if (img.parentNode) {
+                    img.parentNode.removeChild(img);
+                }
+            }, duration * 1000);
         }
 
         // Remover foto
@@ -624,6 +755,13 @@
                 }, 100);
             }
         }, 2000);
+
+        // Criar imagens flutuantes periodicamente
+        setInterval(() => {
+            if (photoList.length > 0) {
+                createFloatingImage();
+            }
+        }, 3000);
 
         // Inicialização
         showError('SISTEMA LIMON ADM INICIALIZADO', 'success');
