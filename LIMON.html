@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIMON ADM - ERROR SYSTEM</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #00ff00;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .glitch-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff);
+            opacity: 0.1;
+            animation: glitchBg 3s infinite;
+            z-index: -1;
+        }
+
+        @keyframes glitchBg {
+            0%, 100% { transform: translate(0, 0); }
+            10% { transform: translate(-2px, -2px); }
+            20% { transform: translate(2px, 2px); }
+            30% { transform: translate(-2px, 2px); }
+            40% { transform: translate(2px, -2px); }
+            50% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            70% { transform: translate(-2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            90% { transform: translate(-2px, -2px); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .title {
+            font-size: 4rem;
+            color: #ff0000;
+            text-shadow: 
+                2px 2px 0px #00ff00,
+                4px 4px 0px #0000ff,
+                6px 6px 10px rgba(255, 0, 0, 0.5);
+            animation: glitchText 2s infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes glitchText {
+            0%, 100% { transform: translate(0, 0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(2px, -2px); }
+            60% { transform: translate(-2px, -2px); }
+            80% { transform: translate(2px, 2px); }
+        }
+
+        .subtitle {
+            color: #00ff00;
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .error-box {
+            background: rgba(255, 0, 0, 0.1);
+            border: 2px solid #ff0000;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .error-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.2), transparent);
+            animation: scan 2s infinite;
+        }
+
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .login-form {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 400px;
+            margin: 20px auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #00ff00;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            background: #000;
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            border-radius: 5px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #ff0000;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        .btn {
+            background: #ff0000;
+            color: #fff;
+            border: none;
+            padding: 12px 30px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: #00ff00;
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+
+        .admin-panel {
+            display: none;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .admin-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+        }
+
+        .admin-section h3 {
+            color: #ff0000;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .file-input {
+            background: #000;
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            padding: 10px;
+            border-radius: 5px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .media-list {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .media-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+            margin-bottom: 10px;
+        }
+
+        .media-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .media-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .btn-small:hover {
+            background: #ff0000;
+            color: #fff;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .gallery img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            filter: hue-rotate(90deg) contrast(1.2);
+        }
+
+        .audio-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 15px;
+            min-width: 300px;
+        }
+
+        .now-playing {
+            color: #00ff00;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 5px;
+            background: #000;
+            border: 1px solid #00ff00;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress {
+            height: 100%;
+            background: #ff0000;
+            width: 0%;
+            transition: width 0.1s;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .volume-slider {
+            flex: 1;
+            background: #000;
+            border: 1px solid #00ff00;
+        }
+
+        .error-messages {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .error-msg {
+            background: rgba(255, 0, 0, 0.9);
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateX(100px); }
+            10%, 90% { opacity: 1; transform: translateX(0); }
+            100% { opacity: 0; transform: translateX(100px); }
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ff0000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="glitch-bg"></div>
+    <div class="error-messages" id="errorMessages"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1 class="title">LIMON ADM</h1>
+            <p class="subtitle">ERROR SYSTEM INITIALIZED</p>
+        </div>
+
+        <div class="error-box">
+            <h2 style="color: #ff0000; margin-bottom: 15px;">⚠️ SYSTEM ERROR 404 ⚠️</h2>
+            <p>ACESSO RESTRITO - AUTORIZAÇÃO NECESSÁRIA</p>
+            <p>CONECTANDO AO SERVIDOR... <span id="dots">...</span></p>
+        </div>
+
+        <!-- Formulário de Login -->
+        <div class="login-form" id="loginForm">
+            <h3 style="color: #00ff00; text-align: center; margin-bottom: 20px;">ACESSO ADMINISTRATIVO</h3>
+            <form id="adminLogin">
+                <div class="form-group">
+                    <label for="username">USUÁRIO:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">SENHA:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn">ACESSAR SISTEMA</button>
+            </form>
+        </div>
+
+        <!-- Painel Admin -->
+        <div class="admin-panel" id="adminPanel">
+            <button class="logout-btn" onclick="logout()">LOGOUT</button>
+            
+            <div class="admin-section">
+                <h3>🎵 GERENCIADOR DE MÚSICAS</h3>
+                <input type="file" class="file-input" id="musicFile" accept="audio/*">
+                <button class="btn" onclick="addMusic()">ADICIONAR MÚSICA</button>
+                
+                <div class="media-list" id="musicList">
+                    <div style="color: #00ff00; text-align: center;">Nenhuma música carregada</div>
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <h3>📸 GERENCIADOR DE FOTOS</h3>
+                <input type="file" class="file-input" id="photoFile" accept="image/*" multiple>
+                <button class="btn" onclick="addPhotos()">ADICIONAR FOTOS</button>
+                
+                <div class="gallery" id="photoGallery"></div>
+            </div>
+        </div>
+
+        <!-- Galeria pública de fotos -->
+        <div class="error-box" id="publicGallery" style="display: block;">
+            <h3 style="color: #00ff00; margin-bottom: 15px;">📸 DADOS CORROMPIDOS DETECTADOS</h3>
+            <div class="gallery" id="publicPhotos"></div>
+        </div>
+    </div>
+
+    <!-- Player de Áudio -->
+    <div class="audio-player" id="audioPlayer" style="display: none;">
+        <div class="now-playing" id="nowPlaying">Nenhuma música tocando</div>
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        <div class="volume-control">
+            <span style="color: #00ff00;">🔊</span>
+            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="50">
+        </div>
+        <audio id="audioElement" loop></audio>
+    </div>
+
+    <script>
+        // Estado da aplicação
+        let isLoggedIn = false;
+        let currentMusic = null;
+        let musicList = [];
+        let photoList = [];
+
+        // Elementos DOM
+        const loginForm = document.getElementById('loginForm');
+        const adminPanel = document.getElementById('adminPanel');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const audioElement = document.getElementById('audioElement');
+        const nowPlaying = document.getElementById('nowPlaying');
+        const progress = document.getElementById('progress');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const errorMessages = document.getElementById('errorMessages');
+
+        // Animação dos pontos
+        setInterval(() => {
+            const dots = document.getElementById('dots');
+            if (dots) {
+                dots.textContent = dots.textContent.length >= 6 ? '.' : dots.textContent + '.';
+            }
+        }, 500);
+
+        // Login
+        document.getElementById('adminLogin').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === 'limon' && password === 'LIMON') {
+                isLoggedIn = true;
+                loginForm.style.display = 'none';
+                adminPanel.style.display = 'block';
+                showError('LOGIN AUTORIZADO - ACESSO CONCEDIDO', 'success');
+            } else {
+                showError('ACESSO NEGADO - CREDENCIAIS INVÁLIDAS');
+                // Efeito de glitch no formulário
+                loginForm.style.animation = 'glitchText 0.5s';
+                setTimeout(() => {
+                    loginForm.style.animation = '';
+                }, 500);
+            }
+        });
+
+        // Logout
+        function logout() {
+            isLoggedIn = false;
+            loginForm.style.display = 'block';
+            adminPanel.style.display = 'none';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            showError('SESSÃO ENCERRADA', 'success');
+        }
+
+        // Adicionar música
+        function addMusic() {
+            const fileInput = document.getElementById('musicFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showError('NENHUM ARQUIVO SELECIONADO');
+                return;
+            }
+
+            const music = {
+                id: Date.now(),
+                name: file.name,
+                url: URL.createObjectURL(file),
+                file: file
+            };
+
+            musicList.push(music);
+            updateMusicList();
+            playMusic(music);
+            fileInput.value = '';
+            showError('MÚSICA ADICIONADA AO SISTEMA', 'success');
+        }
+
+        // Atualizar lista de músicas
+        function updateMusicList() {
+            const musicListEl = document.getElementById('musicList');
+            if (musicList.length === 0) {
+                musicListEl.innerHTML = '<div style="color: #00ff00; text-align: center;">Nenhuma música carregada</div>';
+                return;
+            }
+
+            musicListEl.innerHTML = musicList.map(music => `
+                <div class="media-item">
+                    <span style="color: #00ff00;">${music.name}</span>
+                    <div class="media-controls">
+                        <button class="btn-small" onclick="playMusic({id: ${music.id}, name: '${music.name}', url: '${music.url}'})">TOCAR</button>
+                        <button class="btn-small" onclick="removeMusic(${music.id})">REMOVER</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Tocar música
+        function playMusic(music) {
+            currentMusic = music;
+            audioElement.src = music.url;
+            audioElement.play();
+            nowPlaying.textContent = `🎵 ${music.name}`;
+            audioPlayer.style.display = 'block';
+            showError('REPRODUZINDO: ' + music.name, 'success');
+        }
+
+        // Remover música
+        function removeMusic(id) {
+            musicList = musicList.filter(music => music.id !== id);
+            updateMusicList();
+            if (currentMusic && currentMusic.id === id) {
+                audioElement.pause();
+                audioPlayer.style.display = 'none';
+                currentMusic = null;
+            }
+            showError('MÚSICA REMOVIDA DO SISTEMA', 'success');
+        }
+
+        // Adicionar fotos
+        function addPhotos() {
+            const fileInput = document.getElementById('photoFile');
+            const files = Array.from(fileInput.files);
+            
+            if (files.length === 0) {
+                showError('NENHUMA FOTO SELECIONADA');
+                return;
+            }
+
+            files.forEach(file => {
+                const photo = {
+                    id: Date.now() + Math.random(),
+                    name: file.name,
+                    url: URL.createObjectURL(file)
+                };
+                photoList.push(photo);
+            });
+
+            updatePhotoGallery();
+            fileInput.value = '';
+            showError(`${files.length} FOTO(S) ADICIONADA(S)`, 'success');
+        }
+
+        // Atualizar galeria de fotos
+        function updatePhotoGallery() {
+            const adminGallery = document.getElementById('photoGallery');
+            const publicGallery = document.getElementById('publicPhotos');
+            
+            const photosHTML = photoList.map(photo => `
+                <div style="position: relative;">
+                    <img src="${photo.url}" alt="${photo.name}">
+                    ${isLoggedIn ? `<button class="btn-small" style="position: absolute; top: 5px; right: 5px;" onclick="removePhoto(${photo.id})">X</button>` : ''}
+                </div>
+            `).join('');
+
+            adminGallery.innerHTML = photosHTML;
+            publicGallery.innerHTML = photoList.map(photo => `<img src="${photo.url}" alt="${photo.name}">`).join('');
+        }
+
+        // Remover foto
+        function removePhoto(id) {
+            photoList = photoList.filter(photo => photo.id !== id);
+            updatePhotoGallery();
+            showError('FOTO REMOVIDA DO SISTEMA', 'success');
+        }
+
+        // Controles de áudio
+        audioElement.addEventListener('timeupdate', function() {
+            if (audioElement.duration) {
+                const progressPercent = (audioElement.currentTime / audioElement.duration) * 100;
+                progress.style.width = progressPercent + '%';
+            }
+        });
+
+        volumeSlider.addEventListener('input', function() {
+            audioElement.volume = this.value / 100;
+        });
+
+        // Definir volume inicial
+        audioElement.volume = 0.5;
+
+        // Mostrar mensagem de erro
+        function showError(message, type = 'error') {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-msg';
+            errorDiv.textContent = message;
+            
+            if (type === 'success') {
+                errorDiv.style.background = 'rgba(0, 255, 0, 0.9)';
+                errorDiv.style.color = '#000';
+            }
+            
+            errorMessages.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 3000);
+        }
+
+        // Efeitos visuais aleatórios
+        setInterval(() => {
+            if (Math.random() < 0.1) {
+                document.body.style.filter = 'hue-rotate(' + Math.random() * 360 + 'deg)';
+                setTimeout(() => {
+                    document.body.style.filter = '';
+                }, 100);
+            }
+        }, 2000);
+
+        // Inicialização
+        showError('SISTEMA LIMON ADM INICIALIZADO', 'success');
+    </script>
+</body>
+</html>
