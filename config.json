@@ -1,0 +1,24 @@
+// Carregar configuração do GitHub
+async function loadSiteConfig() {
+    try {
+        const response = await fetch('https://raw.githubusercontent.com/SEUUSUARIO/SEUREPOSITORIO/main/config.json');
+        const config = await response.json();
+        
+        // Aplicar músicas
+        musicList = config.musicas || [];
+        
+        // Aplicar fotos
+        photoList = config.fotos || [];
+        
+        // Atualizar interface
+        updateMusicList();
+        updatePhotoGallery();
+        
+        console.log('Configurações carregadas!');
+    } catch (error) {
+        console.error('Erro ao carregar configurações:', error);
+    }
+}
+
+// Chamar ao carregar a página
+window.addEventListener('load', loadSiteConfig);
